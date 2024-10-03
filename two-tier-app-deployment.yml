@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: two-tier-app-container
-          image: shri2151/flaskapp:62
+          image: chinar016/app:latest
           imagePullPolicy: Always
           env:
             - name: MYSQL_HOST
