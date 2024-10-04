@@ -24,14 +24,17 @@ spec:
                   name: mysql-secret
                   key: MYSQL_ROOT_PASSWORD
             - name: MYSQL_DATABASE
-              value: "mydb"
+              value: "mydb"  # Default database
             - name: MYSQL_USER
-              value: "admin"
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: MYSQL_USER  # Use secret for username
             - name: MYSQL_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: mysql-secret
-                  key: MYSQL_PASSWORD
+                  key: MYSQL_PASSWORD  # Use secret for password
           ports:
             - containerPort: 3306
           volumeMounts:
