@@ -27,6 +27,8 @@ spec:
               value: "admin"
             - name: MYSQL_PASSWORD
               value: "admin"
+            - name: MYSQL_HOST
+              value: mysql
           ports:
             - containerPort: 3306
           volumeMounts:
