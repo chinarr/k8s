@@ -3,8 +3,6 @@ kind: Service
 metadata:
   name: two-tier-app-service
   namespace: app
-  labels:
-    app.kubernetes.io/instance: two-tier-app
 spec:
   type: NodePort
   selector:
