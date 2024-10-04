@@ -1,12 +1,12 @@
+mysql-svc.yml
 apiVersion: v1
 kind: Service
 metadata:
   name: mysql
   namespace: app
 spec:
-  ports:
-  - port: 3306
-    targetPort: 3306
   selector:
     app: mysql
-  clusterIP: None
+  ports:
+    - port: 3306
+      targetPort: 3306
