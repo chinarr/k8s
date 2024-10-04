@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mysql
-  namespace: app
+  namespace: app  # Ensure this matches your desired namespace
   labels:
     app: mysql
 spec:
@@ -36,6 +36,8 @@ spec:
                 secretKeyRef:
                   name: mysql-secret
                   key: MYSQL_PASSWORD  # Use secret for password
+            - name: MYSQL_HOST
+              value: "mysql"  # Service name, as defined in your app.py
           ports:
             - containerPort: 3306
           volumeMounts:
