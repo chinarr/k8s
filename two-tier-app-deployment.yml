@@ -1,10 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: two-tier-app-pod
+  name: two-tier-app
   namespace: app
-  labels:
-    app: two-tier-app
 spec:
   replicas: 1
   selector:
@@ -15,30 +13,39 @@ spec:
       labels:
         app: two-tier-app
     spec:
+      initContainers:
+      - name: check-db-ready
+        image: mysql:5.7
+        command: ['sh', '-c', 
+          'until mysql -h mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -e "SELECT 1"; do echo waiting for mysql; sleep 2; done']
+        env:
+          - name: MYSQL_USER
+            valueFrom:
+              secretKeyRef:
+                name: mysql-secret
+                key: MYSQL_USER
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-secret
+                key: MYSQL_PASSWORD
       containers:
-        - name: two-tier-app-container
-          image: chinar016/app:latest
-          imagePullPolicy: Always
-          env:
-            - name: MYSQL_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mysql-secret
-                  key: MYSQL_ROOT_PASSWORD
-            - name: MYSQL_DATABASE
-              value: "mydb"  # Default database
-            - name: MYSQL_USER
-              valueFrom:
-                secretKeyRef:
-                  name: mysql-secret
-                  key: MYSQL_USER  # Use secret for username
-            - name: MYSQL_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mysql-secret
-                  key: MYSQL_PASSWORD  # Use secret for password
-            - name: MYSQL_HOST
-              value: "mysql"  # Service name, as defined in your app.py
-          ports:
-            - containerPort: 5000
-          imagePullPolicy: Always
+      - name: flask-app
+        image: your-flask-app-image  # Replace with your image
+        ports:
+        - containerPort: 5000
+        env:
+        - name: MYSQL_HOST
+          value: "mysql.app.svc.cluster.local"  # Fully qualified service name
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: MYSQL_USER
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: MYSQL_PASSWORD
+        - name: MYSQL_DB
+          value: "mydb"
